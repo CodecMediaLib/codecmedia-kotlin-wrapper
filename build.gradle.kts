@@ -74,7 +74,7 @@ publishing {
         // Maven Central (Sonatype Central Portal publisher API)
         maven {
             name = "sonatype"
-            url = uri("https://central.sonatype.com/api/v1/publisher")
+            url = uri("https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/")
             credentials {
                 username = providers.gradleProperty("sonatypeUsername").orNull
                 password = providers.gradleProperty("sonatypePassword").orNull
