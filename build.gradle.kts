@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.1.20"
     `java-library`
     `maven-publish`
+    signing
 }
 
 group   = "me.tamkungz.codecmedia"
@@ -70,14 +71,24 @@ publishing {
         // Publish locally for testing:  ./gradlew publishToMavenLocal
         mavenLocal()
 
-        // Uncomment and configure for Maven Central via Sonatype:
-        // maven {
-        //     name = "sonatype"
-        //     url  = uri("https://central.sonatype.com/api/v1/publisher")
-        //     credentials {
-        //         username = providers.gradleProperty("sonatypeUsername").orNull
-        //         password = providers.gradleProperty("sonatypePassword").orNull
-        //     }
-        // }
+        // Maven Central (Sonatype Central Portal publisher API)
+        maven {
+            name = "sonatype"
+            url = uri("https://central.sonatype.com/api/v1/publisher")
+            credentials {
+                username = providers.gradleProperty("sonatypeUsername").orNull
+                password = providers.gradleProperty("sonatypePassword").orNull
+            }
+        }
+    }
+}
+
+signing {
+    val signingKey = providers.gradleProperty("signingKey").orNull
+    val signingPassword = providers.gradleProperty("signingPassword").orNull
+
+    if (!signingKey.isNullOrBlank() && !signingPassword.isNullOrBlank()) {
+        useInMemoryPgpKeys(signingKey, signingPassword)
+        sign(publishing.publications["mavenKotlin"])
     }
 }
