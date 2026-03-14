@@ -7,7 +7,7 @@ plugins {
 }
 
 group   = "me.tamkungz.codecmedia"
-version = "1.1.0"
+version = "1.1.1"
 
 repositories {
     mavenCentral()
@@ -15,7 +15,7 @@ repositories {
 
 dependencies {
     // CodecMedia Java core
-    api("me.tamkungz.codecmedia:codecmedia:1.1.0")
+    api("me.tamkungz.codecmedia:codecmedia:1.1.1")
 
     // Kotlin stdlib is added automatically by the Kotlin plugin
 }

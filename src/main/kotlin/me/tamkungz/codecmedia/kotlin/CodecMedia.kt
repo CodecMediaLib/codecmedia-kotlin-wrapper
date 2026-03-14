@@ -75,6 +75,16 @@ class CodecMediaScope internal constructor(
     val engine: CodecMediaEngine,
 ) {
 
+    private fun probePath(file: Path) = engine.probe(file)
+    private fun getPath(file: Path) = engine.get(file)
+    private fun readMetadataPath(file: Path) = engine.readMetadata(file)
+    private fun writeMetadataPath(file: Path, metadata: Metadata) = engine.writeMetadata(file, metadata)
+    private fun validatePath(file: Path, options: ValidationOptions) = engine.validate(file, options)
+    private fun extractAudioPath(file: Path, outputDir: Path, options: AudioExtractOptions) =
+        engine.extractAudio(file, outputDir, options)
+    private fun convertPath(input: Path, output: Path, options: ConversionOptions) = engine.convert(input, output, options)
+    private fun playPath(file: Path, options: PlaybackOptions) = engine.play(file, options)
+
     // ------------------------------------------------------------------
     // probe / get
     // ------------------------------------------------------------------
@@ -87,11 +97,11 @@ class CodecMediaScope internal constructor(
      * val info = media.probe("song.mp3")
      * ```
      */
-    fun probe(file: String) = engine.probe(file.toPath())
+    fun probe(file: String) = probePath(file.toPath())
     /** @see probe */
-    fun probe(file: File)   = engine.probe(file.toPath())
+    fun probe(file: File)   = probePath(file.toPath())
     /** @see probe */
-    fun probe(file: Path)   = engine.probe(file)
+    fun probe(file: Path)   = probePath(file)
 
     /**
      * Alias of [probe] — matches the Java API `get()` convenience method.
@@ -100,11 +110,11 @@ class CodecMediaScope internal constructor(
      * val info = media.get("image.png")
      * ```
      */
-    fun get(file: String) = engine.get(file.toPath())
+    fun get(file: String) = getPath(file.toPath())
     /** @see get */
-    fun get(file: File)   = engine.get(file.toPath())
+    fun get(file: File)   = getPath(file.toPath())
     /** @see get */
-    fun get(file: Path)   = engine.get(file)
+    fun get(file: Path)   = getPath(file)
 
     // ------------------------------------------------------------------
     // readMetadata / writeMetadata
@@ -121,11 +131,11 @@ class CodecMediaScope internal constructor(
      * val meta = media.readMetadata("song.mp3")
      * ```
      */
-    fun readMetadata(file: String) = engine.readMetadata(file.toPath())
+    fun readMetadata(file: String) = readMetadataPath(file.toPath())
     /** @see readMetadata */
-    fun readMetadata(file: File)   = engine.readMetadata(file.toPath())
+    fun readMetadata(file: File)   = readMetadataPath(file.toPath())
     /** @see readMetadata */
-    fun readMetadata(file: Path)   = engine.readMetadata(file)
+    fun readMetadata(file: Path)   = readMetadataPath(file)
 
     /**
      * Writes [metadata] to the sidecar `.codecmedia.properties` file
@@ -136,11 +146,11 @@ class CodecMediaScope internal constructor(
      * media.writeMetadata("song.mp3", meta)
      * ```
      */
-    fun writeMetadata(file: String, metadata: Metadata) = engine.writeMetadata(file.toPath(), metadata)
+    fun writeMetadata(file: String, metadata: Metadata) = writeMetadataPath(file.toPath(), metadata)
     /** @see writeMetadata */
-    fun writeMetadata(file: File,   metadata: Metadata) = engine.writeMetadata(file.toPath(), metadata)
+    fun writeMetadata(file: File,   metadata: Metadata) = writeMetadataPath(file.toPath(), metadata)
     /** @see writeMetadata */
-    fun writeMetadata(file: Path,   metadata: Metadata) = engine.writeMetadata(file, metadata)
+    fun writeMetadata(file: Path,   metadata: Metadata) = writeMetadataPath(file, metadata)
 
     /**
      * Writes metadata to the sidecar file using a [MetadataBuilder] DSL.
@@ -157,15 +167,15 @@ class CodecMediaScope internal constructor(
      */
     @CodecMediaDsl
     fun writeMetadata(file: String, block: MetadataBuilder.() -> Unit) =
-        engine.writeMetadata(file.toPath(), MetadataBuilder().apply(block).build())
+        writeMetadataPath(file.toPath(), MetadataBuilder().apply(block).build())
     /** @see writeMetadata */
     @CodecMediaDsl
     fun writeMetadata(file: File, block: MetadataBuilder.() -> Unit) =
-        engine.writeMetadata(file.toPath(), MetadataBuilder().apply(block).build())
+        writeMetadataPath(file.toPath(), MetadataBuilder().apply(block).build())
     /** @see writeMetadata */
     @CodecMediaDsl
     fun writeMetadata(file: Path, block: MetadataBuilder.() -> Unit) =
-        engine.writeMetadata(file, MetadataBuilder().apply(block).build())
+        writeMetadataPath(file, MetadataBuilder().apply(block).build())
 
     // ------------------------------------------------------------------
     // validate
@@ -179,11 +189,11 @@ class CodecMediaScope internal constructor(
      * media.validate("video.mp4")
      * ```
      */
-    fun validate(file: String) = engine.validate(file.toPath(), ValidationOptions.defaults())
+    fun validate(file: String) = validatePath(file.toPath(), ValidationOptions.defaults())
     /** @see validate */
-    fun validate(file: File)   = engine.validate(file.toPath(), ValidationOptions.defaults())
+    fun validate(file: File)   = validatePath(file.toPath(), ValidationOptions.defaults())
     /** @see validate */
-    fun validate(file: Path)   = engine.validate(file, ValidationOptions.defaults())
+    fun validate(file: Path)   = validatePath(file, ValidationOptions.defaults())
 
     /**
      * Validates [file] with custom options via [ValidateBuilder].
@@ -197,15 +207,15 @@ class CodecMediaScope internal constructor(
      */
     @CodecMediaDsl
     fun validate(file: String, block: ValidateBuilder.() -> Unit) =
-        engine.validate(file.toPath(), ValidateBuilder().apply(block).build())
+        validatePath(file.toPath(), ValidateBuilder().apply(block).build())
     /** @see validate */
     @CodecMediaDsl
     fun validate(file: File, block: ValidateBuilder.() -> Unit) =
-        engine.validate(file.toPath(), ValidateBuilder().apply(block).build())
+        validatePath(file.toPath(), ValidateBuilder().apply(block).build())
     /** @see validate */
     @CodecMediaDsl
     fun validate(file: Path, block: ValidateBuilder.() -> Unit) =
-        engine.validate(file, ValidateBuilder().apply(block).build())
+        validatePath(file, ValidateBuilder().apply(block).build())
 
     // ------------------------------------------------------------------
     // extractAudio
@@ -226,15 +236,15 @@ class CodecMediaScope internal constructor(
      */
     @CodecMediaDsl
     fun extractAudio(file: String, outputDir: String, block: ExtractBuilder.() -> Unit = {}) =
-        engine.extractAudio(file.toPath(), outputDir.toPath(), ExtractBuilder().apply(block).build())
+        extractAudioPath(file.toPath(), outputDir.toPath(), ExtractBuilder().apply(block).build())
     /** @see extractAudio */
     @CodecMediaDsl
     fun extractAudio(file: File, outputDir: File, block: ExtractBuilder.() -> Unit = {}) =
-        engine.extractAudio(file.toPath(), outputDir.toPath(), ExtractBuilder().apply(block).build())
+        extractAudioPath(file.toPath(), outputDir.toPath(), ExtractBuilder().apply(block).build())
     /** @see extractAudio */
     @CodecMediaDsl
     fun extractAudio(file: Path, outputDir: Path, block: ExtractBuilder.() -> Unit = {}) =
-        engine.extractAudio(file, outputDir, ExtractBuilder().apply(block).build())
+        extractAudioPath(file, outputDir, ExtractBuilder().apply(block).build())
 
     // ------------------------------------------------------------------
     // convert
@@ -262,15 +272,15 @@ class CodecMediaScope internal constructor(
      */
     @CodecMediaDsl
     fun convert(input: String, output: String, block: ConvertBuilder.() -> Unit = {}) =
-        engine.convert(input.toPath(), output.toPath(), ConvertBuilder(output.toPath().extensionOrNull()).apply(block).build())
+        convertPath(input.toPath(), output.toPath(), ConvertBuilder(output.toPath().extensionOrNull()).apply(block).build())
     /** @see convert */
     @CodecMediaDsl
     fun convert(input: File, output: File, block: ConvertBuilder.() -> Unit = {}) =
-        engine.convert(input.toPath(), output.toPath(), ConvertBuilder(output.toPath().extensionOrNull()).apply(block).build())
+        convertPath(input.toPath(), output.toPath(), ConvertBuilder(output.toPath().extensionOrNull()).apply(block).build())
     /** @see convert */
     @CodecMediaDsl
     fun convert(input: Path, output: Path, block: ConvertBuilder.() -> Unit = {}) =
-        engine.convert(input, output, ConvertBuilder(output.extensionOrNull()).apply(block).build())
+        convertPath(input, output, ConvertBuilder(output.extensionOrNull()).apply(block).build())
 
     // ------------------------------------------------------------------
     // play
@@ -284,11 +294,11 @@ class CodecMediaScope internal constructor(
      * media.play("song.mp3")
      * ```
      */
-    fun play(file: String) = engine.play(file.toPath(), PlaybackOptions.defaults())
+    fun play(file: String) = playPath(file.toPath(), PlaybackOptions.defaults())
     /** @see play */
-    fun play(file: File)   = engine.play(file.toPath(), PlaybackOptions.defaults())
+    fun play(file: File)   = playPath(file.toPath(), PlaybackOptions.defaults())
     /** @see play */
-    fun play(file: Path)   = engine.play(file, PlaybackOptions.defaults())
+    fun play(file: Path)   = playPath(file, PlaybackOptions.defaults())
 
     /**
      * Plays [file] with custom options via [PlayBuilder].
@@ -302,15 +312,15 @@ class CodecMediaScope internal constructor(
      */
     @CodecMediaDsl
     fun play(file: String, block: PlayBuilder.() -> Unit = {}) =
-        engine.play(file.toPath(), PlayBuilder().apply(block).build())
+        playPath(file.toPath(), PlayBuilder().apply(block).build())
     /** @see play */
     @CodecMediaDsl
     fun play(file: File, block: PlayBuilder.() -> Unit = {}) =
-        engine.play(file.toPath(), PlayBuilder().apply(block).build())
+        playPath(file.toPath(), PlayBuilder().apply(block).build())
     /** @see play */
     @CodecMediaDsl
     fun play(file: Path, block: PlayBuilder.() -> Unit = {}) =
-        engine.play(file, PlayBuilder().apply(block).build())
+        playPath(file, PlayBuilder().apply(block).build())
 }
 
 // ---------------------------------------------------------------------------
