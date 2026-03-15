@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "2.1.20"
+    id("me.tamkungz.codetally") version "1.0.4"
     `java-library`
     `maven-publish`
     id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
@@ -15,7 +16,7 @@ repositories {
 
 dependencies {
     // CodecMedia Java core
-    api("me.tamkungz.codecmedia:codecmedia:1.1.1")
+    api("me.tamkungz.codecmedia:codecmedia:1.1.2")
 
     // Kotlin stdlib is added automatically by the Kotlin plugin
 }
