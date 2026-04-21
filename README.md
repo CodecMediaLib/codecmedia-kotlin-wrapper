@@ -21,7 +21,7 @@ Idiomatic Kotlin DSL wrapper for the [CodecMedia](https://github.com/CodecMediaL
 
 ```kotlin
 dependencies {
-    implementation("me.tamkungz.codecmedia:codecmedia-kotlin:1.1.0")
+    implementation("me.tamkungz.codecmedia:codecmedia-kotlin:1.2.0")
 }
 ```
 
@@ -35,7 +35,7 @@ To use a local build:
 repositories { mavenLocal() }
 
 dependencies {
-    implementation("me.tamkungz.codecmedia:codecmedia-kotlin:1.1.0")
+    implementation("me.tamkungz.codecmedia:codecmedia-kotlin:1.2.0")
 }
 ```
 
@@ -150,7 +150,7 @@ media.validate("video.mp4") {
 Extracts the audio track from a media file into an output directory.
 
 ```kotlin
-// defaults: targetFormat = "m4a", bitrateKbps = 192, streamIndex = 0
+// engine defaults (passes null options to codecmedia-java)
 media.extractAudio("video.mp4", "/output/dir")
 
 // custom options
@@ -163,9 +163,9 @@ media.extractAudio("video.mp4", "/output/dir") {
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `targetFormat` | `String` | `"m4a"` | Output audio container format |
-| `bitrateKbps` | `Int?` | `192` | Target bitrate in kbps; `null` = engine decides |
-| `streamIndex` | `Int?` | `0` | Zero-based audio stream index; `null` = best stream |
+| `targetFormat` | `String` | `"m4a"` *(DSL builder default)* | Output audio container format |
+| `bitrateKbps` | `Int?` | `192` *(DSL builder default)* | Target bitrate in kbps; `null` = engine decides |
+| `streamIndex` | `Int?` | `0` *(DSL builder default)* | Zero-based audio stream index; `null` = best stream |
 
 ---
 
@@ -182,6 +182,17 @@ media.convert("clip.mov", "clip.out") {
     targetFormat = "mp4"
     preset       = "fast"
     overwrite    = true
+}
+
+// MP3 decode backend selection (codecmedia-java 1.2.0+)
+media.convert("song.mp3", "song.wav") {
+    preset = "decoder=pure-java" // or decoder=javasound / decoder=layer3
+}
+
+// PCM -> WAV parameter tuning
+media.convert("audio.pcm", "audio.wav") {
+    preset = "sr=22050,ch=1,bits=16"
+    overwrite = true
 }
 ```
 
@@ -236,6 +247,23 @@ File("image.png").convertTo(File("image.webp")) { overwrite = true }
 
 // play
 File("song.mp3").play { dryRun = true }
+
+// get alias
+val sameInfo = File("song.mp3").get()
+
+// read / write metadata
+val metadata = File("song.mp3").readMetadata()
+File("song.mp3").writeMetadata {
+    title = "Updated title"
+}
+
+// extract audio
+File("song.mp3").extractAudioTo(File("out"))
+File("song.mp3").extractAudioTo(File("out")) {
+    targetFormat = "mp3"
+    bitrateKbps = null
+    streamIndex = null
+}
 ```
 
 All extension functions have matching `Path` variants:

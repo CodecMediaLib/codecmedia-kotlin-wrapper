@@ -8,7 +8,7 @@ plugins {
 }
 
 group   = "me.tamkungz.codecmedia"
-version = "1.1.1"
+version = "1.2.0"
 
 repositories {
     mavenCentral()
@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     // CodecMedia Java core
-    api("me.tamkungz.codecmedia:codecmedia:1.1.2")
+    api("me.tamkungz.codecmedia:codecmedia:1.2.0")
 
     // Kotlin stdlib is added automatically by the Kotlin plugin
 }
@@ -30,9 +30,6 @@ java {
     withJavadocJar()
 }
 
-// ---------------------------------------------------------------------------
-// Publishing (optional – fill in credentials when publishing to Maven Central)
-// ---------------------------------------------------------------------------
 publishing {
     publications {
         create<MavenPublication>("mavenKotlin") {
